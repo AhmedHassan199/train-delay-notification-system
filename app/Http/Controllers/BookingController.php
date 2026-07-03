@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Trip;
 use Illuminate\Http\RedirectResponse;
@@ -11,22 +12,19 @@ use Illuminate\View\View;
 
 class BookingController extends Controller
 {
-
     public function index(Request $request): View
     {
         $bookings = $request->user()->bookings()
             ->with('trip.train')
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('bookings.index', compact('bookings'));
     }
 
-    public function store(Request $request, Trip $trip): RedirectResponse
+    public function store(StoreBookingRequest $request, Trip $trip): RedirectResponse
     {
-        $data = $request->validate([
-            'seats' => ['required', 'integer', 'min:1', 'max:6'],
-        ]);
+        $data = $request->validated();
 
         try {
             DB::transaction(function () use ($request, $trip, $data) {

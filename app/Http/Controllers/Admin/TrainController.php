@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\TrainRequest;
 use App\Models\Train;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TrainController extends Controller
 {
     public function index(): View
     {
-        $trains = Train::withCount('trips')->orderBy('code')->get();
+        $trains = Train::withCount('trips')->orderBy('code')->paginate(15);
 
         return view('admin.trains.index', compact('trains'));
     }
@@ -22,9 +22,9 @@ class TrainController extends Controller
         return view('admin.trains.create', ['train' => new Train()]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(TrainRequest $request): RedirectResponse
     {
-        Train::create($this->validated($request));
+        Train::create($request->validated());
 
         return redirect()->route('admin.trains.index')->with('status', 'Train created.');
     }
@@ -34,9 +34,9 @@ class TrainController extends Controller
         return view('admin.trains.edit', compact('train'));
     }
 
-    public function update(Request $request, Train $train): RedirectResponse
+    public function update(TrainRequest $request, Train $train): RedirectResponse
     {
-        $train->update($this->validated($request, $train));
+        $train->update($request->validated());
 
         return redirect()->route('admin.trains.index')->with('status', 'Train updated.');
     }
@@ -46,14 +46,5 @@ class TrainController extends Controller
         $train->delete();
 
         return redirect()->route('admin.trains.index')->with('status', 'Train deleted.');
-    }
-
-    private function validated(Request $request, ?Train $train = null): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:50', 'unique:trains,code'.($train ? ','.$train->id : '')],
-            'total_seats' => ['required', 'integer', 'min:1', 'max:2000'],
-        ]);
     }
 }

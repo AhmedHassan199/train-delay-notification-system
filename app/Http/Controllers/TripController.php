@@ -13,7 +13,7 @@ class TripController extends Controller
         $trips = Trip::with('train')
             ->whereIn('status', ['on_time', 'delayed'])
             ->orderBy('departure_time')
-            ->get();
+            ->paginate(10);
 
         return view('trips.index', compact('trips'));
     }

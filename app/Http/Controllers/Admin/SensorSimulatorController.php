@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SimulateReadingRequest;
 use App\Models\Trip;
 use App\Services\TripDelayService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SensorSimulatorController extends Controller
@@ -21,13 +21,9 @@ class SensorSimulatorController extends Controller
         ]);
     }
 
-    public function send(Request $request, TripDelayService $delays): RedirectResponse
+    public function send(SimulateReadingRequest $request, TripDelayService $delays): RedirectResponse
     {
-        $data = $request->validate([
-            'trip_id' => ['required', 'exists:trips,id'],
-            'distance_remaining_km' => ['required', 'numeric', 'min:0'],
-            'current_speed_kmh' => ['required', 'numeric', 'min:0'],
-        ]);
+        $data = $request->validated();
 
         $trip = Trip::with('train')->findOrFail($data['trip_id']);
 

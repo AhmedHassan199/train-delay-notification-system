@@ -4,7 +4,7 @@
 @section('content')
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Available trips</h1>
-        <span class="text-sm text-slate-500">{{ $trips->count() }} trips</span>
+        <span class="text-sm text-slate-500">{{ $trips->total() }} trips</span>
     </div>
 
     @if ($trips->isEmpty())
@@ -64,5 +64,7 @@
                 </div>
             @endforeach
         </div>
+
+        <div class="mt-6">{{ $trips->links() }}</div>
     @endif
 @endsection

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\SensorReadingRequest;
 use App\Models\Trip;
 use App\Services\TripDelayService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SensorController extends Controller
 {
@@ -14,12 +14,9 @@ class SensorController extends Controller
     {
     }
 
-    public function reading(Request $request, Trip $trip): JsonResponse
+    public function reading(SensorReadingRequest $request, Trip $trip): JsonResponse
     {
-        $data = $request->validate([
-            'distance_remaining_km' => ['required', 'numeric', 'min:0'],
-            'current_speed_kmh' => ['required', 'numeric', 'min:0'],
-        ]);
+        $data = $request->validated();
 
         $result = $this->delays->processSensorReading(
             $trip,

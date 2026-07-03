@@ -23,5 +23,7 @@
                 </div>
             @endforeach
         </div>
+
+        <div class="mt-6">{{ $messages->links() }}</div>
     @endif
 @endsection
